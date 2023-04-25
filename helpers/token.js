@@ -1,17 +1,20 @@
+const jwt = require('jsonwebtoken');
 
-const tokenExample = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2NDM3MGI3MDcyNTllMWRhYmMzNThmNDkiLCJuYW1lIjoiVGVzdCIsImlhdCI6MTY4MTc3OTY1MiwiZXhwIjoxNjgxNzg2ODUyfQ.dniJcMkx_hmYsAB7vSMrGFqcnACO5TQb3Er_rwN1_Yo';
+const ONE_TIME_IN_MILLISECONDS = 60 * 1000;
+const SECRET = process.env.SECRET;
 
 const signToken = ( user = {} ) => {
   const payload = {
-    // TODO: add sub, name, and exp claims
+    sub: user.id,
+    name: user.fullname,
+    exp: Date.now() + ONE_TIME_IN_MILLISECONDS,
   };
 
-  // TODO: Return signed token
-  return tokenExample; // validar
+  return jwt.sign(payload, SECRET);
 }
 
 const verifyToken = ( token ) => {
-  return tokenExample; // validar
+  return jwt.verify(token, SECRET); // validar
 }
 
 const validateExpiration = ( payload ) => {
