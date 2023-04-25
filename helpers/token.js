@@ -1,7 +1,12 @@
+const fs = require('node:fs');
 const jwt = require('jsonwebtoken');
 
-const ONE_TIME_IN_MILLISECONDS = 60 * 1000;
+// Verificacion asimetrica
+const PRIVATE_KEY_PATH = process.env.PRIVATE_KEY_PATH;
+const PUBLIC_KEY_PATH = process.env.PUBLIC_KEY_PATH;
+
 const SECRET = process.env.SECRET;
+const ONE_TIME_IN_MILLISECONDS = 60 * 1000;
 
 const signToken = ( user = {} ) => {
   const payload = {
@@ -10,11 +15,27 @@ const signToken = ( user = {} ) => {
     exp: Date.now() + ONE_TIME_IN_MILLISECONDS,
   };
 
+  // Verificacion asimetrica
+  if (PRIVATE_KEY_PATH) {
+    const privateKey = fs.readFileSync(PRIVATE_KEY_PATH, 'utf-8');
+    return jwt.sign(payload, privateKey, {
+      algorithm: 'RS256'
+    });
+  }
+
+  // Verificacion simetrica
   return jwt.sign(payload, SECRET);
 }
 
 const verifyToken = ( token ) => {
-  return jwt.verify(token, SECRET); // validar
+  // Verificacion asimetrica
+  if (PUBLIC_KEY_PATH) {
+    const publicKey = fs.readFileSync(PUBLIC_KEY_PATH, 'utf-8');
+    return jwt.verify(token, publicKey);
+  }
+
+  // Verificacion simetrica
+  return jwt.verify(token, SECRET);
 }
 
 const validateExpiration = ( payload ) => {

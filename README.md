@@ -33,3 +33,9 @@ pm.environment.set('TOKEN', token);
 
 4. En este momento al obtener el token se incrustara en la variable de entorno del endpoint de ruta privada que esta al principio =>
 ```{{TOKEN}}```
+
+## Uso de criptografia para JWT (Ejecutar)
+```
+openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048
+openssl rsa -in private.pem -outform PEM -pubout -out public.pem
+```
